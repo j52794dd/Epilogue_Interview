@@ -1,12 +1,12 @@
 from flask import Flask, render_template
 import requests
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='templates') # Extract the templates ( models for html pages ) from this specific folder
 
 dataCount = None
 dataOrderName = None
 dataShipbobCommand = None
 
-headers = {
+headers = { # Header for the Shopify requests
         "Content-Type": "application/json",
         "X-Shopify-Access-Token": "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"
     }
@@ -15,6 +15,8 @@ headers = {
 def index(template_name="index.html"):  # put application's code here
     api_connect() # Module for the first two tasks ( shopify API )
     shipbob() # Module for the Shipbob API task
+    # Sending data to the index.html template and render it as a page found at the address: http://127.0.0.1:5000
+    # When accessing the page, only this index module will be run
     return render_template(template_name, orderCount=str(dataCount["count"]), orderItems=dataOrderName, command=str(dataShipbobCommand))
 
 def shipbob():
@@ -44,7 +46,7 @@ def shipbob():
     global dataShipbobCommand
     # Try- catch block for making sure exception  in the request are dealt with
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers) # Apply a 'post' request with designated parameters
         req = response.request # take the request object and format it as a CURL request
         command = "curl -X {method} -H {headers} -d '{data}' '{uri}'" # Template function for the request
         method = req.method
@@ -77,7 +79,7 @@ def api_connect():
     global dataOrderName
     # Try- catch block for making sure exception  in the request are dealt with
     try:
-        response = requests.get(build_name_link, headers=headers, params=params_name)
+        response = requests.get(build_name_link, headers=headers, params=params_name) # Apply a 'get' request with designated parameters
         dataOrderName = [item["name"] for item in response.json()["orders"][0]["line_items"]] # Extract the name field out off this specific order from the line_items list
         print(dataOrderName)
     except:
