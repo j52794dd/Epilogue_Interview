@@ -54,5 +54,6 @@ Access the results:
 
   It should look like this:
   
-  ![image](https://github.com/j52794dd/Epilogue_Interview/assets/73079562/7829a56c-0b00-47bc-bce7-9c6ffabd9af6)
+  ![image](https://github.com/j52794dd/Epilogue_Interview/assets/73079562/4f9e4c14-4e84-4a03-acab-8f1697dbe1ba)
+
 
