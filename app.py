@@ -12,14 +12,31 @@ headers = { # Header for the Shopify requests
     }
 
 @app.route('/')
-def index(template_name="index.html"):  # put application's code here
+def index(template_name="index.html"):
+    """
+        Flask route to handle the index page.
+        Calls the Shopify API and Shipbob API functions to get the necessary data.
+        Renders the index.html template with the fetched data.
+
+        Parameters:
+        template_name (str): The name of the template to render (default is "index.html").
+
+        Returns:
+        str: The rendered HTML page.
+    """
     api_connect() # Module for the first two tasks ( shopify API )
     shipbob() # Module for the Shipbob API task
     # Sending data to the index.html template and render it as a page found at the address: http://127.0.0.1:5000
     # When accessing the page, only this index module will be run
+    # The parameters collected from the above requests are collected and sent to the template
     return render_template(template_name, orderCount=str(dataCount["count"]), orderItems=dataOrderName, command=str(dataShipbobCommand))
 
 def shipbob():
+    """
+        Function to interact with the Shipbob API.
+        Constructs and sends a POST request to create an order in Shipbob.
+        Formats the request as a CURL command and stores it in the global variable dataShipbobCommand.
+    """
     url = "https://api.shipbob.com/1.0/order"
 
     # Define the headers (including Authorization if you have a token)
@@ -32,13 +49,13 @@ def shipbob():
     payload = {
         "products": [
             {
-                "product_id": "123456",
-                "quantity": 1
+                "product_id": "123456", # field requested in the exercise specification
+                "quantity": 1 # field required
             }
         ],
         "recipient": {
-            "name": "John Doe",
-            "address": "123 Main St",
+            "name": "John Doe", # mandatory field
+            "address": "123 Main St", # mandotory field
         }
     }
 
@@ -60,6 +77,11 @@ def shipbob():
     print(dataShipbobCommand)
 
 def api_connect():
+    """
+        Function to interact with the Shopify API.
+        Fetches the order count and specific order details from Shopify.
+        Stores the fetched data in global variables dataCount and dataOrderName.
+    """
     build_count_link = "https://epilogue-test.myshopify.com/admin/api/2024-01/orders/count.json" # Use the url for counting commands
     params_count = {"status": "any"} # All the command with status any
     global dataCount
@@ -75,7 +97,13 @@ def api_connect():
         dataCount = "JSON Error"
 
     build_name_link = "https://epilogue-test.myshopify.com/admin/api/2024-01/orders.json" # using url for displaying orders
+
+    # The following configurations for the parameters name will not work as multiple orders will be displayed
+    # params_name = {"order_number": 1028}
+    # params_name = {"order_number": "1028"}
+    # params_name = {"name": "#1028"}
     params_name = {"name": "1028"} # order with the number 1028 or name #1028
+
     global dataOrderName
     # Try- catch block for making sure exception  in the request are dealt with
     try:
@@ -86,5 +114,5 @@ def api_connect():
         print("JSON Error")
         dataOrderName = "JSON Error"
 
-if __name__ == '__main__':
+if __name__ == '__main__': # this will not be executed as the application is running and the end user will access the end-page
     pass
