@@ -5,6 +5,7 @@ app = Flask(__name__, template_folder='templates') # Extract the templates ( mod
 dataCount = None
 dataOrderName = None
 dataShipbobCommand = None
+dataProductStatus = []
 
 headers = { # Header for the Shopify requests
         "Content-Type": "application/json",
@@ -29,7 +30,7 @@ def index(template_name="index.html"):
     # Sending data to the index.html template and render it as a page found at the address: http://127.0.0.1:5000
     # When accessing the page, only this index module will be run
     # The parameters collected from the above requests are collected and sent to the template
-    return render_template(template_name, orderCount=str(dataCount["count"]), orderItems=dataOrderName, command=str(dataShipbobCommand))
+    return render_template(template_name, orderCount=str(dataCount["count"]), orderItems=dataOrderName, command=str(dataShipbobCommand), inventoryData=dataProductStatus)
 
 def shipbob():
     """
@@ -76,6 +77,8 @@ def shipbob():
         dataShipbobCommand = "JSON Error"
     print(dataShipbobCommand)
 
+
+
 def api_connect():
     """
         Function to interact with the Shopify API.
@@ -113,6 +116,25 @@ def api_connect():
     except:
         print("JSON Error")
         dataOrderName = "JSON Error"
+
+    global dataProductStatus
+
+    try:
+        response = requests.get(build_name_link, headers=headers,
+                                params=params_name)  # Apply a 'get' request with designated parameters
+        # Extract the variant id out of this line_item in order to find the id for the inventory of this item
+        dataVariantsID = [item["variant_id"] for item in response.json()["orders"][0]["line_items"]]
+        for id in dataVariantsID:
+            # request the inventory_item_id from the variants database
+            template_variant_request = "https://epilogue-test.myshopify.com/admin/api/2024-01/variants/{id}.json" # template for the url in the variants database
+            response = requests.get(template_variant_request.format(id=id), headers=headers)
+            template_inventory_request = "https://epilogue-test.myshopify.com/admin/api/2024-01/inventory_items/{id}.json" # template for the inventory_item request
+            print(response.json()["variant"]["inventory_item_id"]) # print the inventory id of the original item ( for debug purposes )
+            response = requests.get(template_inventory_request.format(id=response.json()["variant"]["inventory_item_id"]), headers=headers) # fetch the inventory data for the item with the given inventory_id
+            dataProductStatus.append(response.json()) # append in the list the found data
+    except:
+        print("JSON Error")
+    print(dataProductStatus) # print in the console the fetched data
 
 if __name__ == '__main__': # this will not be executed as the application is running and the end user will access the end-page
     pass

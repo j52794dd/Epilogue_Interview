@@ -16,5 +16,11 @@
 
 <h2> Equivalent CURL command for the Shipbob 'create order' request ( does not have API Token credentials )</h2>
 <p>{{ command }}</p>
+
+<h2> Inventory data of the products in the order #1028 </h2>
+<!-- Jinja template => for loop expresing the inventory data of the elements in the order 1028 -->
+{% for item in inventoryData %}
+<p>{{ item }}</p>
+{% endfor %}
 </body>
 </html>
