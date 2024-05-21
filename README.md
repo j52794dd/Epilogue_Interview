@@ -51,3 +51,8 @@ flask run --port 9875 # Run the application on the port 9875
 Access the results:
 
 * http://127.0.0.1:9875
+
+  It should look like this:
+  
+  ![image](https://github.com/j52794dd/Epilogue_Interview/assets/73079562/7829a56c-0b00-47bc-bce7-9c6ffabd9af6)
+
